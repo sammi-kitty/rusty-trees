@@ -1,24 +1,22 @@
 pub mod tree_organiser {
-    use std::fs;
+    use std::{fs::File, fs};
     use text_io::read;
+    use csv;
 
     use crate::structs::{PlantationType, Species, Tree, TreeType, Coordinates};
 
     pub fn read_trees() -> Vec<Tree> {
         let filename: String = get_filename("Input file name (WITH relative path): ");
 
-        let file = read_file(&filename);
+        let file = open_file(&filename);
 
         let trees: Vec<Tree> = format_trees(&file);
 
         return trees;
     }
 
-    fn format_trees(file: &Option<String>) -> Vec<Tree> {
-        let file = match file {
-            None => return Vec::new(),
-            Some(file) => file,
-        };
+    fn format_trees(file: &Option<File>) -> Vec<Tree> {
+        let reader = csv::Reader::from_reader(file);
 
         let mut trees: Vec<Tree> = Vec::new();
 
@@ -46,7 +44,7 @@ pub mod tree_organiser {
 
         Tree {
             coordinates: {
-
+                
             },
             tree_type: {
                 if vec_elements[1].to_lowercase() == "lövträd" {
@@ -72,13 +70,13 @@ pub mod tree_organiser {
         }
     }
 
-    fn read_file(filename: &str) -> Option<String> {
-        let file: Option<String> = match fs::read_to_string(filename) {
+    fn open_file(filename: &str) -> File {
+        let file: Option<File> = match File::open(filename) {
             Err(why) => {
                 println!("{why}");
-                None
+
             }
-            Ok(file) => Some(file),
+            Ok(file) => file,
         };
         return file;
     }
