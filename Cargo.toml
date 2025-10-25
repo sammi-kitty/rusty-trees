@@ -4,6 +4,8 @@ cargo-features = ["edition2024"]
 name = "rusty-trees"
 version = "0.1.0"
 edition = "2024"
+authors = ["sammi-kitty"]
 
 [dependencies]
+csv = "1.4.0"
 text_io = "0.1.13"
