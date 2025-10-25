@@ -1,5 +1,5 @@
 pub mod tree_organiser {
-    use std::{fs::File, fs};
+    use std::{fs::File, fs, process};
     use text_io::read;
     use csv;
 
@@ -15,25 +15,31 @@ pub mod tree_organiser {
         return trees;
     }
 
-    fn format_trees(file: &Option<File>) -> Vec<Tree> {
-        let reader = csv::Reader::from_reader(file);
+    fn format_trees(file: &File) -> Vec<Tree> {
+
+
+        // note to self: use SERDE
+        let mut reader = csv::ReaderBuilder::new()
+        .has_headers(true)
+        .delimiter(b';')
+        .from_reader(file);
+
+        for record in reader.records() {
+            match record {
+                Ok(record) => println!("{:#?}", record),
+                Err(err) => {
+                    println!("error reading CSV: {}", err);
+                }
+            }
+        }
 
         let mut trees: Vec<Tree> = Vec::new();
 
-        let iter_file = file.split("\n");
-        for line in iter_file {
-            if line == "Geo Point;Löv- eller barrträd;Trädart vetenskapligt namn;Trädart svenskt namn;Gatu- eller parkträd;Planteringsdatum" {
-                
-            }
-            else {
-                trees.push(line_to_tree(line))
-            }
-        }
 
         return trees;
     }
 
-    fn line_to_tree(line: &str) -> Tree {
+    /*fn line_to_tree(line: &str) -> Tree {
         /*
         Take in a line on form
         "coordinates";"tree_type";"species_latin";"species_swedish";"plantation_type";"date"
@@ -68,12 +74,12 @@ pub mod tree_organiser {
             },
             date: vec_elements[5],
         }
-    }
+    }*/
 
     fn open_file(filename: &str) -> File {
-        let file: Option<File> = match File::open(filename) {
+        let file: File = match File::open(filename) {
             Err(why) => {
-                println!("{why}");
+                panic!("{why}")
 
             }
             Ok(file) => file,
